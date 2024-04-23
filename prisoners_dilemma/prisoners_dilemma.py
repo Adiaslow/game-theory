@@ -90,15 +90,15 @@ def main():
         ('D', 'D'): (1, 1)   # Both players defect
     }
 
-    player1 = RandomPlayer()
-    player2 = RandomPlayer()
+    player1 = PDRandomBot()
+    player2 = PDRandomBot()
 
     game = PrisonersDilemma(player1, player2, payoff_matrix)
     game.run_iterations(100)
     game.plot_scores()
 
-    print("Player 1 score:", player1.get_score())
-    print("Player 2 score:", player2.get_score())
+    print("Player 1 stats:", player1.get_stats())
+    print("Player 2 stats:", player2.get_stats())
 
 if __name__ == '__main__':
     main()
