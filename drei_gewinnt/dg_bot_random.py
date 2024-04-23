@@ -23,6 +23,7 @@ class DGRandomBot:
         if valid_moves:
             return random.choice(valid_moves)
         else:
+            print("Random: No valid moves available.")
             return None
 
     def report(self, result):

@@ -2,6 +2,9 @@
 Module for the Drei Gewinnt (Tic Tac Toe) game.
 """
 # Internal Modules
+from dg_adam_mcmc import DGAdamMCMC
+from dg_adam_mlp import DGAdamMLP
+
 from dg_bot_random import DGRandomBot
 
 # External Modules
@@ -111,33 +114,29 @@ class DreiGewinnt:
         other_player = players[1]
 
         while True:
-            move = current_player.make_decision(self._board)
-            if move is None:
-                # No valid moves available, game ends in a tie
-                self._player1.report(0)
-                self._player2.report(0)
-                return 0
+            # Get the current player's move
+            row, col = current_player.make_decision(self._board)
 
-            row, col = move
-            if not self.make_move(row, col, 1 if current_player == self._player1 else -1):
-                continue
+            # Make the move on the board
+            self._board[row][col] = 1 if current_player == self._player1 else -1
 
-            game_over = self._is_game_over()
-            if game_over is not None:
-                if game_over == 1:
-                    self._player1.report(1)
-                    self._player2.report(-1)
-                    return 1
-                elif game_over == -1:
-                    self._player1.report(-1)
-                    self._player2.report(1)
-                    return -1
-                else:
-                    self._player1.report(0)
-                    self._player2.report(0)
-                    return 0
+            # Check if the game is over
+            result = self._is_game_over()
+            if result is not None:
+                if result == 1:
+                    current_player.report(1)
+                    other_player.report(-1)
+                elif result == -1:
+                    current_player.report(-1)
+                    other_player.report(1)
+                else:  # Tie
+                    current_player.report(0)
+                    other_player.report(0)
+                return result
 
+            # Switch players
             current_player, other_player = other_player, current_player
+
 
     def run_iterations(self, num_iterations):
         """
@@ -164,11 +163,14 @@ class DreiGewinnt:
         plt.show()
 
 def main():
-    player1 = DGRandomBot()
-    player2 = DGRandomBot()
+    player1 = DGAdamMLP()
+    player2 = DGAdamMCMC()
 
     game = DreiGewinnt(player1, player2)
-    game.run_iterations(100)
+
+    game.run_iterations(1000)
+
+    print(game.get_board())
     game.plot_scores()
 
     print("Player 1 stats:", player1.get_stats())
