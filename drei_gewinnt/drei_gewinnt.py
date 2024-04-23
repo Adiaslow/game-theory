@@ -2,7 +2,7 @@
 Module for the Drei Gewinnt (Tic Tac Toe) game.
 """
 # Internal Modules
-from bot_random import RandomPlayer
+from dg_bot_random import DGRandomBot
 
 # External Modules
 import numpy as np
@@ -164,11 +164,11 @@ class DreiGewinnt:
         plt.show()
 
 def main():
-    player1 = RandomPlayer()
-    player2 = RandomPlayer()
+    player1 = DGRandomBot()
+    player2 = DGRandomBot()
 
     game = DreiGewinnt(player1, player2)
-    game.run_iterations(1000)
+    game.run_iterations(100)
     game.plot_scores()
 
     print("Player 1 stats:", player1.get_stats())
