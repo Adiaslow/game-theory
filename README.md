@@ -3,5 +3,5 @@
 Pitting algorithms against each other in various games.
 
 ## Current Games
-### Drei Weinnt (Tic-Tac-Toe)
+### Drei Gewinnt (Tic-Tac-Toe)
 ### Prisioners Dilemma
