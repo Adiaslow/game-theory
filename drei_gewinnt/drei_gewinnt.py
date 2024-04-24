@@ -26,6 +26,19 @@ class DreiGewinnt:
         self._board = np.zeros((3, 3), dtype=int)
         self._player1 = player1
         self._player2 = player2
+
+        self._season_stats = {
+            "player1": {
+                "wins": 0,
+                "losses": 0,
+                "ties": 0
+            },
+            "player2": {
+                "wins": 0,
+                "losses": 0,
+                "ties": 0
+            }
+        }
         self._player1_score = []
         self._player2_score = []
 
@@ -124,14 +137,19 @@ class DreiGewinnt:
             result = self._is_game_over()
             if result is not None:
                 if result == 1:
-                    current_player.report(1)
-                    other_player.report(-1)
+                    self._player1_score.append(self._player1_score[-1] + 1 if self._player1_score else 1)
+                    self._season_stats["player1"]["wins"] += 1
+                    self._player2_score.append(self._player2_score[-1] - 1 if self._player2_score else -1)
+                    self._season_stats["player2"]["losses"] += 1
                 elif result == -1:
-                    current_player.report(-1)
-                    other_player.report(1)
+                    self._player1_score.append(self._player1_score[-1] - 1 if self._player1_score else -1)
+                    self._season_stats["player1"]["losses"] += 1
+                    self._player2_score.append(self._player2_score[-1] + 1 if self._player2_score else 1)
+                    self._season_stats["player2"]["wins"] += 1
                 else:  # Tie
-                    current_player.report(0)
-                    other_player.report(0)
+                    self._player1_score.append(self._player1_score[-1] if self._player1_score else 0)
+                    self._player2_score.append(self._player2_score[-1] if self._player2_score else 0)
+                    self._season_stats["player1"]["ties"] += 1
                 return result
 
             # Switch players
@@ -164,7 +182,7 @@ class DreiGewinnt:
 
 def main():
     player1 = DGAdamMLP()
-    player2 = DGAdamMCMC()
+    player2 = DGAdamMLP()
 
     game = DreiGewinnt(player1, player2)
 
@@ -173,7 +191,8 @@ def main():
     print(game.get_board())
     game.plot_scores()
 
-    print("Player 1 stats:", player1.get_stats())
-    print("Player 2 stats:", player2.get_stats())
+    print("Player 1 stats:", game._season_stats["player1"])
+    print("Player 2 stats:", game._season_stats["player2"])
+
 if __name__ == '__main__':
     main()
