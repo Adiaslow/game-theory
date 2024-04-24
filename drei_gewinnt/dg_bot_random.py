@@ -1,6 +1,6 @@
 import random
 
-class DGRandomBot:
+class DGBotRandom:
     """Represents a player who makes random moves."""
 
     def __init__(self):

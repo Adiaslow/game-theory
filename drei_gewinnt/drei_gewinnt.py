@@ -5,12 +5,14 @@ Module for the Drei Gewinnt (Tic Tac Toe) game.
 from dg_adam_mcmc import DGAdamMCMC
 from dg_adam_mlp import DGAdamMLP
 
-from dg_bot_random import DGRandomBot
+from dg_bot_random import DGBotRandom
+from dg_bot_minimax import DGBotMinimax
 
 # External Modules
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+from tqdm.auto import tqdm
 
 class DreiGewinnt:
     """Represents a Drei Gewinnt (Tic Tac Toe) game."""
@@ -137,19 +139,14 @@ class DreiGewinnt:
             result = self._is_game_over()
             if result is not None:
                 if result == 1:
-                    self._player1_score.append(self._player1_score[-1] + 1 if self._player1_score else 1)
                     self._season_stats["player1"]["wins"] += 1
-                    self._player2_score.append(self._player2_score[-1] - 1 if self._player2_score else -1)
                     self._season_stats["player2"]["losses"] += 1
                 elif result == -1:
-                    self._player1_score.append(self._player1_score[-1] - 1 if self._player1_score else -1)
                     self._season_stats["player1"]["losses"] += 1
-                    self._player2_score.append(self._player2_score[-1] + 1 if self._player2_score else 1)
                     self._season_stats["player2"]["wins"] += 1
                 else:  # Tie
-                    self._player1_score.append(self._player1_score[-1] if self._player1_score else 0)
-                    self._player2_score.append(self._player2_score[-1] if self._player2_score else 0)
                     self._season_stats["player1"]["ties"] += 1
+                    self._season_stats["player2"]["ties"] += 1
                 return result
 
             # Switch players
@@ -163,7 +160,7 @@ class DreiGewinnt:
         Args:
             num_iterations (int): The number of iterations to run.
         """
-        for _ in range(num_iterations):
+        for _ in tqdm(range(num_iterations), desc="Simulating Games:", unit="game"):
             result = self.run_game()
             self._player1_score.append(self._player1_score[-1] + result if self._player1_score else result)
             self._player2_score.append(self._player2_score[-1] - result if self._player2_score else -result)
@@ -181,18 +178,20 @@ class DreiGewinnt:
         plt.show()
 
 def main():
-    player1 = DGAdamMLP()
-    player2 = DGAdamMLP()
+    bot_ais = {"Random": DGBotRandom, "Minimax": DGBotMinimax}
+    adams_ais = {"MCMC": DGAdamMCMC, "MLP": DGAdamMLP}
+
+    player1 = adams_ais["MLP"]()
+    # player2 = adams_ais["MCMC"]()
+    player2 = bot_ais["Minimax"]()
+
 
     game = DreiGewinnt(player1, player2)
-
-    game.run_iterations(1000)
-
-    print(game.get_board())
+    game.run_iterations(100)
     game.plot_scores()
 
-    print("Player 1 stats:", game._season_stats["player1"])
-    print("Player 2 stats:", game._season_stats["player2"])
+    print(f"Player 1 stats:", game._season_stats["player1"])
+    print(f"Player 2 stats:", game._season_stats["player2"])
 
 if __name__ == '__main__':
     main()
